@@ -1,0 +1,8 @@
+// client/src/components/TodoItem.jsx
+import { formatDate } from '../utils/helpers.js';
+
+const colors = { high: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300', medium: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300', low: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' };
+/** Render one task and its accessible controls. */
+export default function TodoItem({ todo, onToggle, onEdit, onDelete }) {
+  return <article className={`card flex gap-3 p-4 transition hover:-translate-y-0.5 ${todo.completed ? 'opacity-65' : ''}`}><input type="checkbox" checked={todo.completed} onChange={() => onToggle(todo._id)} aria-label={`Mark ${todo.title} ${todo.completed ? 'incomplete' : 'complete'}`} className="mt-1 h-5 w-5 accent-indigo-600" /><div className="min-w-0 flex-1"><div className="flex flex-wrap items-start justify-between gap-2"><h3 className={`font-semibold ${todo.completed ? 'line-through' : ''}`}>{todo.title}</h3><span className={`rounded-full px-2 py-0.5 text-xs font-bold capitalize ${colors[todo.priority]}`}>{todo.priority}</span></div>{todo.description && <p className="mt-1 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-300">{todo.description}</p>}<p className="mt-2 text-xs text-slate-500">📅 {formatDate(todo.dueDate)}</p></div><div className="flex flex-col gap-1"><button onClick={() => onEdit(todo)} aria-label={`Edit ${todo.title}`} className="rounded p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800">✎</button><button onClick={() => onDelete(todo._id)} aria-label={`Delete ${todo.title}`} className="rounded p-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950">×</button></div></article>;
+}

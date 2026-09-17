@@ -1,0 +1,14 @@
+// client/src/components/TodoForm.jsx
+import { useEffect, useState } from 'react';
+import { toDateInput } from '../utils/helpers.js';
+
+const blank = { title: '', description: '', priority: 'medium', dueDate: '' };
+/** Shared create/edit form. It becomes a dialog when editing. */
+export default function TodoForm({ initialTodo, onSubmit, onCancel }) {
+  const [form, setForm] = useState(blank); const [saving, setSaving] = useState(false);
+  useEffect(() => setForm(initialTodo ? { ...initialTodo, dueDate: toDateInput(initialTodo.dueDate) } : blank), [initialTodo]);
+  const submit = async (event) => { event.preventDefault(); setSaving(true); try { await onSubmit({ ...form, dueDate: form.dueDate || null }); if (!initialTodo) setForm(blank); } finally { setSaving(false); } };
+  const fields = <><label className="block text-sm font-medium">Title<input required maxLength="200" aria-label="Todo title" className="field mt-1" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="What needs doing?" /></label><label className="block text-sm font-medium">Description<textarea maxLength="1000" aria-label="Todo description" className="field mt-1 min-h-20 resize-y" value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Add a little context (optional)" /></label><div className="grid grid-cols-2 gap-3"><label className="text-sm font-medium">Priority<select aria-label="Todo priority" className="field mt-1" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><label className="text-sm font-medium">Due date<input type="date" aria-label="Todo due date" className="field mt-1" value={form.dueDate || ''} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></label></div></>;
+  if (initialTodo) return <div className="fixed inset-0 z-10 grid place-items-center bg-slate-950/50 p-4" role="dialog" aria-modal="true" aria-label="Edit todo"><form onSubmit={submit} className="card w-full max-w-lg space-y-4 p-6"><h2 className="text-lg font-bold">Edit task</h2>{fields}<div className="flex justify-end gap-2"><button type="button" onClick={onCancel} className="btn-secondary">Cancel</button><button disabled={saving} className="btn-primary">{saving ? 'Saving…' : 'Save changes'}</button></div></form></div>;
+  return <form onSubmit={submit} className="card space-y-4 p-5 sm:p-6"><h1 className="text-2xl font-bold">Make today count.</h1><p className="-mt-2 text-sm text-slate-500 dark:text-slate-400">Capture a task, then focus on the next right thing.</p>{fields}<button disabled={saving} className="btn-primary w-full sm:w-auto">{saving ? 'Adding…' : '+ Add task'}</button></form>;
+}
